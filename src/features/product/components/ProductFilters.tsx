@@ -10,19 +10,17 @@ import {
 } from '@material-ui/core';
 import { Search } from '@material-ui/icons';
 import { ChangeEvent } from 'hoist-non-react-statics/node_modules/@types/react';
-import { City, ListParams } from 'models';
+import {  ListParams } from 'models';
 import React, { useRef } from 'react';
 
 export interface ProductFiltersProps {
   filter: ListParams;
-  cityList: City[];
   onChange?: (newFilter: ListParams) => void;
   onSearchChange?: (newFilter: ListParams) => void;
 }
 
 export default function ProductFilters({
   filter,
-  cityList,
   onChange,
   onSearchChange,
 }: ProductFiltersProps) {
@@ -31,7 +29,7 @@ export default function ProductFilters({
     if (!onSearchChange) return;
     const newFilter: ListParams = {
       ...filter,
-      name_like: e.target.value,
+      name: e.target.value,
       _page: 1,
     };
     onSearchChange(newFilter);
@@ -77,10 +75,10 @@ export default function ProductFilters({
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel htmlFor="searchByName">search by name</InputLabel>
+            <InputLabel htmlFor="searchByName">Tìm theo tên</InputLabel>
             <OutlinedInput
               id="searchByName"
-              label="Search by name"
+              label="Tìm theo tên"
               endAdornment={<Search />}
               defaultValue={filter.name_like}
               onChange={handleSearchChange}
@@ -89,48 +87,47 @@ export default function ProductFilters({
           </FormControl>
         </Grid>
 
-        <Grid item xs={12} md={6} lg={3}>
+        <Grid item xs={12} md={6} lg={2}>
           <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel id="filterByCity">Filter by city</InputLabel>
+            <InputLabel id="filterByCity">Tìm theo danh mục</InputLabel>
             <Select
               labelId="filterByCity"
-              label="Filter by city"
+              label="Tìm theo danh mục"
               value={filter.city || ''}
               onChange={handleCityChange}
             >
               <MenuItem value="">
-                <em>All</em>
+                <em>Tất cả</em>
               </MenuItem>
-              {cityList.map((city, index) => (
+              {/* {cityList.map((city, index) => (
                 <MenuItem key={index} value={city.code}>
                   {city.name}
                 </MenuItem>
-              ))}
+              ))} */}
             </Select>
           </FormControl>
         </Grid>
 
         <Grid item xs={12} md={6} lg={2}>
           <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel id="sort">Sort</InputLabel>
+            <InputLabel id="sort">Sắp xếp</InputLabel>
             <Select
               labelId="sort"
-              label="Sort"
+              label="Sắp xếp"
               value={filter._sort ? `${filter._sort}.${filter._order}` : ''}
               onChange={handleSortChange}
             >
               <MenuItem value="">
-                <em>none</em>
+                <em>Tất cả</em>
               </MenuItem>
-
-              <MenuItem value="name.acs">Name ASC</MenuItem>
-              <MenuItem value="name.desc">Name DESC</MenuItem>
-              <MenuItem value="originalPrice.acs">Price ASC</MenuItem>
-              <MenuItem value="originalPrice.desc">Price DESC</MenuItem>
+              <MenuItem value="name.acs">Tên tăng dần</MenuItem>
+              <MenuItem value="name.desc">Tên giảm</MenuItem>
+              <MenuItem value="price.asc">Giá cao </MenuItem>
+              <MenuItem value="price.desc">Giá giảm</MenuItem>
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={6} lg={1}>
+        <Grid item xs={12} md={6} lg={2}>
           <Button
             variant="outlined"
             color="primary"
@@ -138,7 +135,7 @@ export default function ProductFilters({
             fullWidth
             onClick={handleClearFilter}
           >
-            Clear
+            Xóa bộ lọc
           </Button>
         </Grid>
       </Grid>

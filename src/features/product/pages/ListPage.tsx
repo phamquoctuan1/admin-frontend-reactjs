@@ -2,7 +2,7 @@ import { Box, Button, LinearProgress, makeStyles, Typography } from '@material-u
 import { Pagination } from '@material-ui/lab';
 import productApi from 'api/productApi';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { selectCityList, selectCityMap } from 'features/city/citySlice';
+
 import { ListParams, Product } from 'models';
 import React, { useEffect } from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
@@ -41,12 +41,11 @@ export default function ListPage() {
 
   const classes = useStyles();
   const dispatch = useAppDispatch();
-  const { _totalRows, _limit, _page } = useAppSelector(selectProductPagination);
+  const pagination = useAppSelector(selectProductPagination);
   const filter = useAppSelector(selectProductFilter);
   const productList = useAppSelector(selectProductList);
   const loading = useAppSelector(selectProductLoading);
-  const cityMap = useAppSelector(selectCityMap);
-  const cityList = useAppSelector(selectCityList);
+
   useEffect(() => {
     dispatch(productActions.fetchProductList(filter));
   }, [dispatch, filter]);
@@ -91,11 +90,11 @@ export default function ListPage() {
     <Box className={classes.root}>
       {loading && <LinearProgress className={classes.loading} />}
       <Box className={classes.titleContainer}>
-        <Typography variant="h4"> Product Management</Typography>
+        <Typography variant="h4"> Quản lý sản phẩm</Typography>
 
         <Link to={`${match.path}/add`} style={{ textDecoration: 'none' }}>
           <Button variant="contained" color="primary">
-            Add new Product
+            Thêm sẩn phẩm mới
           </Button>
         </Link>
       </Box>
@@ -103,7 +102,6 @@ export default function ListPage() {
       <Box mb={3}>
         <ProductFilters
           filter={filter}
-          cityList={cityList}
           onSearchChange={handleSearchChange}
           onChange={handleFilterChange}
         />
@@ -112,15 +110,15 @@ export default function ListPage() {
       {/* Student table */}
       <ProductTable
         productList={productList}
-        cityMap={cityMap}
         onEdit={handleEditProduct}
         onRemove={handleRemoveProduct}
       />
       {/* Pagination */}
       <Box mt={2} className={classes.pagination}>
         <Pagination
-          count={Math.ceil(_totalRows / _limit)}
-          page={_page}
+          color="primary"
+          count={Math.ceil(pagination._totalRows / pagination._limit)}
+          page={pagination._page}
           onChange={handlePageChange}
         />
       </Box>

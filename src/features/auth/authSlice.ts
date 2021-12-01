@@ -10,18 +10,29 @@ export interface AuthState {
   isLoggedIn: boolean;
   logging?: boolean;
   currentUser?: User;
+   error: string | undefined;
 }
 
 const initialState: AuthState = {
   isLoggedIn: false,
   logging: false,
   currentUser: undefined,
+   error:  undefined,
 };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    getUser(state, action: PayloadAction<string>) {
+      state.logging = true;
+    },
+    getUserSuccess(state, action: PayloadAction<User>) {
+      state.currentUser = action.payload;
+      state.isLoggedIn = true;
+      state.logging = false;
+      state.error = undefined;
+    },
     login(state, action: PayloadAction<LoginPayload>) {
       state.logging = true;
     },

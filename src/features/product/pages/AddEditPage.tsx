@@ -18,13 +18,14 @@ export default function AddEditPage() {
     (async () => {
       try {
         const response = await productApi.getById(Number(productId));
-        setProduct(response);
+        setProduct(response.data);
       } catch (error) {
         console.log('failed to fetch product', error);
       }
     })();
   }, [productId]);
   const handleProductFormSubmit = async (formValues: Product) => {
+    console.log(formValues);
     if (isEdit) {
       await productApi.update(formValues);
     } else {
@@ -42,27 +43,26 @@ export default function AddEditPage() {
     });
     history.push('/admin/product');
   };
-
+console.log(product)
   const initialValues: Product = {
     name: '',
-    price: 0,
-    amount: 0,
+    price: 1,
+    quantity: 1,
     status: 1,
+    discount_percentage: '0%',
     description: '',
-    size: 'm',
-    city: '',
     ...product,
   } as Product;
   return (
     <Box>
       <Link to="/admin/product">
         <Button variant="contained" color="primary">
-          <ChevronLeft /> Back
+          <ChevronLeft /> Quay lại
         </Button>
       </Link>
 
       <Box mt={4}>
-        <Typography variant="h4">{isEdit ? `Update product ` : 'Add new product'}</Typography>
+        <Typography variant="h4">{isEdit ? `Cập nhật sản phẩm ` : 'Thêm sản phẩm'}</Typography>
       </Box>
       {(!isEdit || Boolean(product)) && (
         <Box mt={4}>

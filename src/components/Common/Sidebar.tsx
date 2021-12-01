@@ -36,7 +36,7 @@ export function Sidebar() {
             <ListItemIcon>
               <Dashboard />
             </ListItemIcon>
-            <ListItemText primary="Dashboard" />
+            <ListItemText primary="Trang chủ" />
           </ListItem>
         </NavLink>
 
@@ -54,7 +54,7 @@ export function Sidebar() {
             <ListItemIcon>
               <Folder />
             </ListItemIcon>
-            <ListItemText primary="Product" />
+            <ListItemText primary="Sản phẩm" />
           </ListItem>
         </NavLink>
       </List>

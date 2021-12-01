@@ -1,10 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 const axiosClient = axios.create({
-    baseURL: "https://js-post-api.herokuapp.com/api",
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  baseURL: 'http://127.0.0.1:5000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // Add a request interceptor

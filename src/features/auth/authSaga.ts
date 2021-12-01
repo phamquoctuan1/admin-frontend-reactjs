@@ -1,20 +1,29 @@
 import { call, delay, fork, put, take } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
+import authApi from 'api/authApi';
 import { push } from 'connected-react-router';
+import { User, UserRespone } from 'models';
 import { authActions, LoginPayload } from './authSlice';
 
 function* handleLogin(payload: LoginPayload) {
   try {
     yield delay(1000);
-    //   yield call(userAPI, payload)
+    const resToken: UserRespone = yield call(authApi.login, payload);
+    if (resToken) {
+      localStorage.setItem(
+        'access_token',
+        JSON.stringify(resToken.accessToken)
+      );
+      localStorage.setItem(
+        'refresh_token',
+        JSON.stringify(resToken.refreshToken)
+      );
+      const resUser: User = yield call(authApi.getUser, resToken.accessToken);
+      yield put(authActions.getUserSuccess(resUser));
+      yield put(authActions.loginSuccess(resUser));
     localStorage.setItem('access_token', JSON.stringify(payload));
-    yield put(
-      authActions.loginSuccess({
-        id: 1,
-        name: 'Pham Tuan',
-      })
-    );
     yield put(push('/admin/dashboard'));
+      }
   } catch (error: unknown) {
     yield put(authActions.loginFailed('error'));
   }

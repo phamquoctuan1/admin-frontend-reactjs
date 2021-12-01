@@ -30,11 +30,11 @@ export function Header() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Student Management
+            Quản lý Shop Yolo
           </Typography>
 
           <Button color="inherit" onClick={handleLogoutClick}>
-            Logout
+            Đăng xuất
           </Button>
         </Toolbar>
       </AppBar>

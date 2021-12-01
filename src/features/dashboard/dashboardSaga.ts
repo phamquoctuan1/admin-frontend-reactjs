@@ -1,8 +1,7 @@
 import { all, call, put, takeLatest } from '@redux-saga/core/effects';
-import cityApi from 'api/cityApi';
 import studentApi from 'api/studentApi';
-import { City, ListResponse, Student } from 'models';
-import { dashboardActions, RankingByCity } from './dashboardSlice';
+import { ListResponse, Student } from 'models';
+import { dashboardActions } from './dashboardSlice';
 
 function* fetchStatistics() {
   const responseList: Array<ListResponse<Student>> = yield all([
@@ -37,31 +36,6 @@ function* fetchLowestStudentList() {
 
   yield put(dashboardActions.setLowestStudentList(data));
 }
-function* fetchRankingByCityList() {
-  //fetch all city list
-  const { data: cityList }: ListResponse<City> = yield call(cityApi.getAll);
-
-  //fetch ranking per city
-  const callList = cityList.map((city) =>
-    call(studentApi.getAll, {
-      _page: 1,
-      _limit: 5,
-      _sort: 'mark',
-      _order: 'desc',
-      city: city.code,
-    })
-  );
-  const responseList: Array<ListResponse<Student>> = yield all(callList);
-
-  const rankingByCityList: Array<RankingByCity> = responseList.map((response, index) => ({
-    cityId: cityList[index].code,
-    cityName: cityList[index].name,
-    rankList: response.data,
-  }));
-  //update state
-
-  yield put(dashboardActions.setRankingByCityList(rankingByCityList));
-}
 
 function* fetchDashboardData() {
   try {
@@ -69,7 +43,7 @@ function* fetchDashboardData() {
       call(fetchStatistics),
       call(fetchHighestStudentList),
       call(fetchLowestStudentList),
-      call(fetchRankingByCityList),
+      
     ]);
 
     yield put(dashboardActions.fetchDataSuccess());

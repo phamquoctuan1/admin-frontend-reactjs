@@ -1,35 +1,57 @@
-import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useAppSelector } from 'app/hooks';
-import { InputField, RadioGroupField, SelectField } from 'components/FormFields';
-import { selectCityOptions } from 'features/city/citySlice';
-import { Product } from 'models';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { Box, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, TextField, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-
+import categoryApi from 'api/categoryApi';
+import { InputField } from 'components/FormFields';
+import { colors } from 'constants/colors';
+import { sizes } from 'constants/sizes';
+import { Category, Color, Product, Size } from 'models';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
 export interface ProductFormProps {
   initialValues?: Product;
   onSubmit?: (formValues: Product) => void;
 }
 const schema = yup
   .object({
-    name: yup.string().required('Please enter name'),
+    name: yup.string().required('Nhập tên sản phẩm'),
     price: yup
       .number()
-      .positive('Please enter a positive number.')
-      .integer('Please enter an integer')
-      .min(0, 'Min is 0')
-      .required('Please enter a age')
-      .typeError('Please enter a valid number'),
-    amount: yup.number().min(0, 'Min is 0').required().typeError('Please enter a valid number'),
-    city: yup.string().required('Please select city'),
+      .positive('Giá sản phẩm không được âm.')
+      .integer('Giá sản phẩm không được âm')
+      .required('Không được bỏ trống')
+      .typeError('Giá trị không hợp lệ'),
+    quantity: yup
+      .number()
+      .positive('Giá sản phẩm không được âm.')
+      .integer('Giá sản phẩm không được âm')
+      .required('Không được bỏ trống')
+      .typeError('Giá trị không hợp lệ'),
+    discount_percentage: yup.string()
+      .matches(
+      /^0*(100\.00|0|100|[0-9]?[0-9])%+?$/,
+        'Nhập khuyến mãi theo %'
+      )
   })
   .required();
+  const initialDataProduct: Product = {
+    description: '',
+    imageInfo: [],
+    sizeInfo: [],
+    colorInfo: [],
+    status: true,
+    categoryId: 0,
+    createdBy: '',
+  };
 export default function ProductForm({ initialValues, onSubmit }: ProductFormProps) {
   const [error, setError] = useState<string>('');
-  const cityOptions = useAppSelector(selectCityOptions);
+
+  
+  const [category, setCategory] = useState<Category[]>();
+ 
+ 
+  const [dataProduct, setDataProduct] = useState(initialDataProduct);
   const {
     control,
     handleSubmit,
@@ -38,8 +60,59 @@ export default function ProductForm({ initialValues, onSubmit }: ProductFormProp
     defaultValues: initialValues,
     resolver: yupResolver(schema),
   });
-
+    useEffect(() => {
+      const getCategory = async () => {
+        try {
+          const response = await categoryApi.getAll();
+          setCategory(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getCategory();
+    }, []);
+ const handleOnchangeColor = (value: Color) => {
+   const currentIdx: number = dataProduct?.colorInfo.indexOf(value);
+   const newColor = [...dataProduct.colorInfo];
+   if (currentIdx === -1) {
+     newColor.push(value);
+   } else {
+     newColor.splice(currentIdx, 1);
+   }
+   setDataProduct({ ...dataProduct, colorInfo: newColor });
+ };
+  const handleOnchangeSize = (value: Size) => {
+    const currentIdx: number = dataProduct?.sizeInfo.indexOf(value);
+    const newSize = [...dataProduct.sizeInfo];
+    if (currentIdx === -1) {
+      newSize.push(value);
+    } else {
+      newSize.splice(currentIdx, 1);
+    }
+    setDataProduct({ ...dataProduct, sizeInfo: newSize });
+  };
+const handleSelectChange = (e: any) => {
+  setDataProduct({ ...dataProduct, categoryId: e.target.value });
+}
+// const handleTextAreaChange = (newContent:string) => {
+//    return setDataProduct({ ...dataProduct, description: newContent });
+// };
+const handleImageChange= (e:any)=>{
+   let files = e.target.files;
+    let allFiles : any = [];
+    for (var i = 0; i < files.length; i++) {
+      let file = files[i];
+      let reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        allFiles.push(reader.result);
+        
+    }
+  }setDataProduct({...dataProduct,imageInfo:allFiles})
+}
+console.log(dataProduct);
   const handleFormSubmit = async (formValues: Product) => {
+   formValues = { ...formValues, ...dataProduct };
     try {
       setError('');
       await onSubmit?.(formValues);
@@ -48,32 +121,136 @@ export default function ProductForm({ initialValues, onSubmit }: ProductFormProp
       setError(msg);
     }
   };
-
   return (
-    <Box maxWidth={350}>
+    <Box maxWidth={1}>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <InputField name="name" control={control} label="Product Name" />
-        <RadioGroupField
-          name="size"
-          control={control}
-          label="Size"
-          options={[
-            { label: 'M', value: 'm' },
-            { label: 'S', value: 's' },
-            { label: 'L', value: 'l' },
-            { label: 'XL', value: 'xl' },
-          ]}
-        />
-        <InputField name="price" control={control} label="Price" type="number" />
-        <InputField name="amount" control={control} label="Amount" type="number" />
-        {Array.isArray(cityOptions) && cityOptions.length > 0 && (
-          <SelectField name="city" control={control} label="City" options={cityOptions} />
-        )}
+        <Grid container>
+          <Grid item xs={12} md={6} lg={8}>
+            <Grid container>
+              <Grid item xs={12} md={6} lg={4}>
+                <FormControl variant="outlined" size="small">
+                  <InputField name="name" control={control} label="Tên sản phẩm" />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <FormControl variant="outlined" size="small">
+                  <InputField name="price" control={control} label="Giá" type="number" min="0" />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <FormControl variant="outlined" size="small">
+                  <InputField
+                    name="quantity"
+                    control={control}
+                    label="Số lượng"
+                    type="number"
+                    min="0"
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={12} md={6} lg={4}>
+                <FormControl variant="outlined" size="small">
+                  <InputField name="discount_percentage" control={control} label="Giảm giá %" />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={6} lg={7}>
+                <FormControl variant="standard" size="small" fullWidth>
+                  <InputField name="image[]" control={control} type="file" multiple onChange={handleImageChange} />
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <Box style={{ height: '40px', width: '210.4px', marginTop: '16px' }}>
+                <FormControl variant="outlined" size="small" fullWidth>
+                  <InputLabel id="Category"> Danh mục</InputLabel>
+                  <Select
+                    labelId="Category"
+                    label="Danh mục"
+                    value={dataProduct.categoryId}
+                    onChange={handleSelectChange}
+                    defaultValue=""
+                  >
+                    <MenuItem value={0}>
+                      <em></em>
+                    </MenuItem>
+                    {category?.map((item, index) => (
+                      <MenuItem key={index} value={item.id}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            </Grid>
+            <Box mt={2}>
+              <Grid item xs={12} md={12} lg={11}>
+                <Typography variant="h6" component="h3">
+                  Mô tả
+                </Typography>
+                {/* <JoditEditor
+                  ref={editor}
+                  value={dataProduct.description as string}
+                  // config={config}
+                  // tabIndex of textarea
+                  onChange={handleTextAreaChange}
+                /> */}
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  defaultValue=""
+                  variant="outlined"
+                  onChange={(e) => setDataProduct({ ...dataProduct, description: e.target.value })}
+                />
+              </Grid>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <FormControl>
+              <Typography variant="h6" component="h3">
+                Màu sắc
+              </Typography>
+              {colors.map((item: any, index) => (
+                <FormControlLabel
+                  key={index}
+                  control={
+                    <Checkbox
+                      name={item.name}
+                      onChange={() => handleOnchangeColor(item)}
+                      checked={dataProduct.colorInfo.indexOf(item) === -1 ? false : true}
+                    />
+                  }
+                  label={item.name}
+                />
+              ))}
+            </FormControl>
 
+            <FormControl style={{ marginLeft: '60px' }}>
+              <Typography variant="h6" component="h3">
+                Kích cỡ
+              </Typography>
+              {sizes.map((item: any, index) => (
+                <FormControlLabel
+                  key={index}
+                  control={
+                    <Checkbox
+                      name={item.name}
+                      onChange={() => handleOnchangeSize(item)}
+                      checked={dataProduct.sizeInfo.indexOf(item) === -1 ? false : true}
+                    />
+                  }
+                  label={item.name}
+                />
+              ))}
+            </FormControl>
+          </Grid>
+        </Grid>
         {error && <Alert severity="error">{error}</Alert>}
         <Box mt={3}>
           <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
-            {isSubmitting && <CircularProgress size={16} color="primary" />} Save
+            {isSubmitting && <CircularProgress size={16} color="primary" />} Thêm
           </Button>
         </Box>
       </form>

@@ -15,8 +15,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { City, Product } from 'models';
+import { Product } from 'models';
+
 import React, { useState } from 'react';
+import { numberWithCommas } from 'utils';
 
 const useStyles = makeStyles((theme) => ({
   table: {},
@@ -26,16 +28,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 export interface StudentTableProps {
   productList: Product[];
-  cityMap: {
-    [key: string]: City;
-  };
   onEdit?: (product: Product) => void;
   onRemove?: (product: Product) => void;
 }
 
 export default function StudentTable({
   productList,
-  cityMap,
   onEdit,
   onRemove,
 }: StudentTableProps) {
@@ -62,25 +60,30 @@ export default function StudentTable({
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Amount</TableCell>
+              <TableCell>Tên sản phẩm</TableCell>
+              <TableCell>Giá</TableCell>
+              <TableCell>Số lượng</TableCell>
+              <TableCell>Khuyến mãi</TableCell>
+              <TableCell>Trạng thái</TableCell>
+              <TableCell>Người tạo</TableCell>
 
-              <TableCell align="right">Actions</TableCell>
+              <TableCell align="center">Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {productList.map((product, index) => (
               <TableRow key={index}>
-                <TableCell width={310}>{product.id}</TableCell>
+                <TableCell width={100}>{product.id}</TableCell>
                 <TableCell>{product.name}</TableCell>
                 {/* <TableCell>{capitalizeString(product.originalPrice)}</TableCell> */}
-                <TableCell>{product.originalPrice}</TableCell>
+                <TableCell>{numberWithCommas(product.price)}</TableCell>
+                <TableCell>{product.quantity}</TableCell>
                 <TableCell>
                   {/* color={getMarkColor(product.price)} */}
-                  <Box fontWeight="bold">{product.salePrice} </Box>
+                  <Box fontWeight="bold">{product.discount_percentage} </Box>
                 </TableCell>
-                {/* <TableCell>{cityMap[product.city]?.name}</TableCell> */}
+                <TableCell>{product.status ? 'Mới nhập' : 'Tồn kho'}</TableCell>
+                <TableCell>{product.createdBy}</TableCell>
                 <TableCell align="right">
                   <Button
                     className={classes.edit}
@@ -90,7 +93,7 @@ export default function StudentTable({
                       onEdit?.(product);
                     }}
                   >
-                    Edit
+                    Sửa
                   </Button>
                   <Button
                     size="small"
@@ -99,7 +102,7 @@ export default function StudentTable({
                       handleRemoveClick(product);
                     }}
                   >
-                    Remove
+                    Xóa
                   </Button>
                 </TableCell>
               </TableRow>
@@ -117,13 +120,13 @@ export default function StudentTable({
         <DialogTitle id="alert-dialog-title">Remove a product?</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to remove this product has name "{selectedProduct?.name}" ? <br />
-            This action can&apos;t be undo!
+            Bạn có thực sự muốn xóa sản phẩm "{selectedProduct?.name}" ? <br />
+            Việc này không thể quay lại!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="default" variant="outlined">
-            Cancel
+            Hủy
           </Button>
           <Button
             onClick={() => handleRemoveComfirm(selectedProduct as Product)}
@@ -131,7 +134,7 @@ export default function StudentTable({
             variant="contained"
             autoFocus
           >
-            Remove
+            Xóa
           </Button>
         </DialogActions>
       </Dialog>

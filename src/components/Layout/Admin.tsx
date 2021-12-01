@@ -3,7 +3,7 @@ import { Box, makeStyles } from '@material-ui/core';
 import { Header, Sidebar } from 'components/Common';
 import { Switch, Route } from 'react-router-dom';
 import Dashboard from 'features/dashboard';
-import StudentFeature from 'features/student';
+
 import ProductFeature from 'features/product';
 
 const useStyles = makeStyles((theme) => ({
@@ -43,9 +43,6 @@ export function AdminLayout() {
         <Switch>
           <Route path="/admin/dashboard">
             <Dashboard />
-          </Route>
-          <Route path="/admin/student">
-            <StudentFeature />
           </Route>
           <Route path="/admin/product">
             <ProductFeature />
