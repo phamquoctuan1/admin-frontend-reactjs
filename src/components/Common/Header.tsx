@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 export function Header() {
   const classes = useStyles();
   const dispatch = useAppDispatch();
+ 
   const handleLogoutClick = () => {
     dispatch(authActions.logout());
   };
@@ -30,7 +31,7 @@ export function Header() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Quản lý Shop Yolo
+           Quản lý Shop Yolo
           </Typography>
 
           <Button color="inherit" onClick={handleLogoutClick}>

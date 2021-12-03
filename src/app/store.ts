@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
 import authReducer from 'features/auth/authSlice';
+import categoryReducer from 'features/category/categorySlice';
 
 import dashboardReducer from 'features/dashboard/dashboardSlice';
 import productReducer from 'features/product/productSlice';
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   dashboard: dashboardReducer,
   product: productReducer,
+  category: categoryReducer,
 });
 const sagaMiddleware = createSagaMiddleware();
 

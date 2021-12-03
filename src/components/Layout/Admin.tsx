@@ -5,6 +5,7 @@ import { Switch, Route } from 'react-router-dom';
 import Dashboard from 'features/dashboard';
 
 import ProductFeature from 'features/product';
+import CategoryFeature from 'features/category';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,6 +47,9 @@ export function AdminLayout() {
           </Route>
           <Route path="/admin/product">
             <ProductFeature />
+          </Route>
+          <Route path="/admin/category">
+            <CategoryFeature />
           </Route>
         </Switch>
       </Box>

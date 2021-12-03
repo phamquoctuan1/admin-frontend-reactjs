@@ -3,5 +3,8 @@ export interface Category {
   parentId?: number;
   name: string;
   slug: string;
-  children: Category[];
+  status?: boolean;
+  createdAt?: Date | string;
+  createdBy?: string;
+  children?: Category[];
 }

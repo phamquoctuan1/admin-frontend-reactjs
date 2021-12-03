@@ -1,4 +1,4 @@
-import { Product } from "models";
+import { Category, Product } from "models";
 
 export interface PaginationParams {
   _limit: number;
@@ -15,6 +15,10 @@ export interface ListResponse<T> {
 }
 export interface ProductResponse {
   data: Product;
+  status: string;
+}
+export interface CategoryResponse {
+  data: Category;
   status: string;
 }
 export interface ListParams {

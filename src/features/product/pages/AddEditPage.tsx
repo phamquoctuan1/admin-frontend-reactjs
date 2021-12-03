@@ -25,14 +25,12 @@ export default function AddEditPage() {
     })();
   }, [productId]);
   const handleProductFormSubmit = async (formValues: Product) => {
-    console.log(formValues);
     if (isEdit) {
       await productApi.update(formValues);
     } else {
       await productApi.add(formValues);
     }
-
-    toast.success('Save product successfully!', {
+    toast.success('Thành công!', {
       position: 'top-right',
       autoClose: 5000,
       hideProgressBar: false,
@@ -43,10 +41,9 @@ export default function AddEditPage() {
     });
     history.push('/admin/product');
   };
-console.log(product)
   const initialValues: Product = {
     name: '',
-    price: 1,
+    price: 10000,
     quantity: 1,
     status: 1,
     discount_percentage: '0%',

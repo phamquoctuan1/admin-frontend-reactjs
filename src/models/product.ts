@@ -16,7 +16,6 @@ export interface Promote {
   discount_amount?: number;
 }
 export interface Image {
-  base64?: string;
   url: string;
 }
 

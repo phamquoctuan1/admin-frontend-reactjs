@@ -11,7 +11,7 @@ import {
   selecteDashboardLoading,
   selectHighestStudentList,
   selectLowestStudentList,
-  selectRankingByCityList,
+  selectRankingByCityList
 } from './dashboardSlice';
 
 const useStyles = makeStyles((theme) => ({

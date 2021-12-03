@@ -4,9 +4,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Dashboard, Folder, Person } from '@material-ui/icons';
-import React from 'react';
+import React,{ useEffect} from 'react';
 import { NavLink } from 'react-router-dom';
-
+import { useAppDispatch } from 'app/hooks';
+import { authActions } from 'features/auth/authSlice';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -27,7 +28,17 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function Sidebar() {
   const classes = useStyles();
-
+  const dispatch = useAppDispatch();
+   const token = JSON.parse(localStorage.getItem('access_token') || '{}');
+   useEffect(() => {
+     const task = () => {
+       if (Boolean(token)) {
+         return dispatch(authActions.getUser(token));
+       }
+       return localStorage.removeItem('access_token');
+     };
+     task();
+   }, [token, dispatch]);
   return (
     <div className={classes.root}>
       <List component="nav" aria-label="main mailbox folders">
@@ -40,12 +51,12 @@ export function Sidebar() {
           </ListItem>
         </NavLink>
 
-        <NavLink to="/admin/student" className={classes.link}>
+        <NavLink to="/admin/category" className={classes.link}>
           <ListItem button>
             <ListItemIcon>
               <Person />
             </ListItemIcon>
-            <ListItemText primary="Student" />
+            <ListItemText primary="Danh mục" />
           </ListItem>
         </NavLink>
 

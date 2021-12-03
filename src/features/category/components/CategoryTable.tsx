@@ -1,12 +1,11 @@
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Paper,
+  Paper
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -15,10 +14,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { Product } from 'models';
-
+import dayjs from 'dayjs';
+import { Category } from 'models';
 import React, { useState } from 'react';
-import { numberWithCommas } from 'utils';
+
+
 
 const useStyles = makeStyles((theme) => ({
   table: {},
@@ -27,30 +27,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export interface StudentTableProps {
-  productList: Product[];
-  onEdit?: (product: Product) => void;
-  onRemove?: (product: Product) => void;
+  categoryList: Category[];
+  onEdit?: (category: Category) => void;
+  onRemove?: (category: Category) => void;
 }
 
-export default function ProductTable({
-  productList,
-  onEdit,
-  onRemove,
-}: StudentTableProps) {
+export default function CategoryTable({ categoryList, onEdit, onRemove }: StudentTableProps) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product>();
+  const [selectedCategory, setSelectedCategory] = useState<Category>();
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleRemoveClick = (product: Product): void => {
-    setSelectedProduct(product);
+  const handleRemoveClick = (category: Category): void => {
+    setSelectedCategory(category);
     setOpen(true);
   };
-  const handleRemoveComfirm = (product: Product): void => {
-    onRemove?.(product);
+  const handleRemoveComfirm = (category: Category): void => {
+    onRemove?.(category);
     setOpen(false);
   };
   return (
@@ -60,37 +56,32 @@ export default function ProductTable({
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Tên sản phẩm</TableCell>
-              <TableCell>Giá</TableCell>
-              <TableCell>Số lượng</TableCell>
-              <TableCell>Khuyến mãi</TableCell>
+              <TableCell>Tên danh mục</TableCell>
+              <TableCell>slug</TableCell>
               <TableCell>Trạng thái</TableCell>
               <TableCell>Người tạo</TableCell>
-
+              <TableCell>Ngày tạo</TableCell>
+              <TableCell>Danh mục cha</TableCell>
               <TableCell align="center">Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {productList.map((product, index) => (
+            {categoryList.map((category, index) => (
               <TableRow key={index}>
-                <TableCell width={100}>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                {/* <TableCell>{capitalizeString(product.originalPrice)}</TableCell> */}
-                <TableCell>{numberWithCommas(product.price)}</TableCell>
-                <TableCell>{product.quantity}</TableCell>
-                <TableCell>
-                  {/* color={getMarkColor(product.price)} */}
-                  <Box fontWeight="bold">{product.discount_percentage} </Box>
-                </TableCell>
-                <TableCell>{product.status ? 'Mới nhập' : 'Tồn kho'}</TableCell>
-                <TableCell>{product.createdBy}</TableCell>
+                <TableCell width={100}>{category.id}</TableCell>
+                <TableCell>{category.name}</TableCell>
+                <TableCell>{category.slug}</TableCell>
+                <TableCell>{category.status ? 'Kích hoạt' : 'Ẩn'}</TableCell>
+                <TableCell>{category.createdBy}</TableCell>
+                <TableCell>{dayjs(category.createdBy?.toString()).format('DD/MM/YYYY')}</TableCell>
+                <TableCell>{category.parentId}</TableCell>
                 <TableCell align="right">
                   <Button
                     className={classes.edit}
                     size="small"
                     color="primary"
                     onClick={() => {
-                      onEdit?.(product);
+                      onEdit?.(category);
                     }}
                   >
                     Sửa
@@ -99,7 +90,7 @@ export default function ProductTable({
                     size="small"
                     color="secondary"
                     onClick={() => {
-                      handleRemoveClick(product);
+                      handleRemoveClick(category);
                     }}
                   >
                     Xóa
@@ -120,7 +111,7 @@ export default function ProductTable({
         <DialogTitle id="alert-dialog-title">Remove a product?</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Bạn có thực sự muốn xóa sản phẩm "{selectedProduct?.name}" ? <br />
+            Bạn có thực sự muốn xóa sản phẩm "{selectedCategory?.name}" ? <br />
             Việc này không thể quay lại!
           </DialogContentText>
         </DialogContent>
@@ -129,7 +120,7 @@ export default function ProductTable({
             Hủy
           </Button>
           <Button
-            onClick={() => handleRemoveComfirm(selectedProduct as Product)}
+            onClick={() => handleRemoveComfirm(selectedCategory as Category)}
             color="secondary"
             variant="contained"
             autoFocus
