@@ -23,6 +23,7 @@ export default function AddEditPage() {
         console.log('failed to fetch product', error);
       }
     })();
+    return ()=>{}
   }, [productId]);
   const handleProductFormSubmit = async (formValues: Product) => {
     if (isEdit) {
@@ -43,7 +44,7 @@ export default function AddEditPage() {
   };
   const initialValues: Product = {
     name: '',
-    price: 10000,
+    price: 100000,
     quantity: 1,
     status: 1,
     discount_percentage: '0%',

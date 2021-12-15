@@ -10,7 +10,7 @@ function* fetchProductList(action: PayloadAction<ListParams>) {
     const response: ListResponse<Product> = yield call(productApi.getAll, action.payload);
     yield put(productActions.fetchProductListSuccess(response));
   } catch (error) {
-    console.log('failed to fetch student list', error);
+    console.log('failed to fetch product list', error);
     yield put(productActions.fetchProductListFailed());
   }
 }

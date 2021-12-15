@@ -81,7 +81,7 @@ export default function ListPage() {
         <Typography variant="h4"> Quản lý danh mục</Typography>
         <Link to={`${match.path}/add`} style={{ textDecoration: 'none' }}>
           <Button variant="contained" color="primary">
-            Thêm sẩn phẩm mới
+            Thêm danh mục mới
           </Button>
         </Link>
       </Box>

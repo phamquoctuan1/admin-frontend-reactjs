@@ -8,6 +8,8 @@ import React,{ useEffect} from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAppDispatch } from 'app/hooks';
 import { authActions } from 'features/auth/authSlice';
+import CategoryIcon from '@material-ui/icons/Category';
+import ReceiptIcon from '@material-ui/icons/Receipt';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -54,7 +56,7 @@ export function Sidebar() {
         <NavLink to="/admin/category" className={classes.link}>
           <ListItem button>
             <ListItemIcon>
-              <Person />
+              <CategoryIcon />
             </ListItemIcon>
             <ListItemText primary="Danh mục" />
           </ListItem>
@@ -66,6 +68,24 @@ export function Sidebar() {
               <Folder />
             </ListItemIcon>
             <ListItemText primary="Sản phẩm" />
+          </ListItem>
+        </NavLink>
+
+        <NavLink to="/admin/order" className={classes.link}>
+          <ListItem button>
+            <ListItemIcon>
+              <ReceiptIcon />
+            </ListItemIcon>
+            <ListItemText primary="Đơn hàng" />
+          </ListItem>
+        </NavLink>
+
+        <NavLink to="/admin/customer" className={classes.link}>
+          <ListItem button>
+            <ListItemIcon>
+              <Person />
+            </ListItemIcon>
+            <ListItemText primary="Khách hàng"/>
           </ListItem>
         </NavLink>
       </List>

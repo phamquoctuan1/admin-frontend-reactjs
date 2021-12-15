@@ -41,27 +41,28 @@ const schema = yup
       .integer('Giá sản phẩm không được âm')
       .required('Không được bỏ trống')
       .typeError('Giá trị không hợp lệ')
-      .min(10000,'Tối thiểu 10 ngàn đồng'),
+      .min(10000, 'Tối thiểu 10 ngàn đồng'),
     quantity: yup
       .number()
       .positive('Giá sản phẩm không được âm.')
       .integer('Giá sản phẩm không được âm')
       .required('Không được bỏ trống')
       .typeError('Giá trị không hợp lệ'),
-    discount_percentage: yup.string()
-      .matches(
-      /^0*(100\.00|0|100|[0-9]?[0-9])%+?$/,
-        'Nhập khuyến mãi theo %'
-      )
+    discount_percentage: yup
+      .string()
+      .matches(/^0*(100\.00|0|100|[0-9]?[0-9])%+?$/, 'Nhập khuyến mãi theo %'),
   })
   .required();
   const initialDataProduct: Product = {
+    price:1000,
+    discount_percentage:'0%',
     description: '',
+    quantity:1,
     imageInfo: [],
     sizeInfo: [],
     colorInfo: [],
     status: true,
-    categoryId: 0,
+    categoryId: undefined,
     createdBy: '',
   };
 
@@ -111,7 +112,7 @@ export default function ProductForm({ initialValues, onSubmit }: ProductFormProp
   const [imagePreview, setImagePreview] = useState<string[]>(a || []);
 const [category, setCategory] = useState<Category[]>();
   const [open, setOpen] = useState(false);
-  
+  const [valueSelect, setValueSelect] = useState();
   const handleOpen = () => {
     setOpen(true);
   };
@@ -131,7 +132,7 @@ const [category, setCategory] = useState<Category[]>();
     useEffect(() => {
       const getCategory = async () => {
         try {
-          const response = await categoryApi.getAll();
+          const response = await categoryApi.getWithoutParent();
           setCategory(response.data);
         } catch (error) {
           console.log(error);
@@ -161,16 +162,17 @@ const [category, setCategory] = useState<Category[]>();
   };
 const handleSelectChange = (e: any) => {
   setDataProduct({ ...dataProduct, categoryId: e.target.value });
+  setValueSelect(e.target.value);
 }
 // const handleTextAreaChange = (newContent:string) => {
 //    return setDataProduct({ ...dataProduct, description: newContent });
 // };
 const onChangeQuantity = (e: any) => {
-  const quantity = e.target.value;
+  const quantity = e.target.value.trim();
   setDataProduct({ ...dataProduct, quantity: parseInt(quantity) });
 };
 const onChangePrice = (e: any) => {
-  const price = e.target.value;
+  const price = e.target.value.trim();
   setDataProduct({ ...dataProduct, price: parseInt(price) });
 };
 
@@ -191,7 +193,7 @@ const handleImageChange= (e:any)=>{
       reader.onload = () => {
         allFiles.push(reader.result);
     }
-  }setDataProduct({...dataProduct,imageInfo:allFiles,createdBy:user.name})
+  }setDataProduct({...dataProduct,imageInfo:allFiles,createdBy:user?.name})
   setImagePreview(filePreview);
 }
   const handleFormSubmit = async (formValues: Product) => {
@@ -201,8 +203,8 @@ const handleImageChange= (e:any)=>{
     try {
       setError('');
       await onSubmit?.(formValues);
-    } catch (err) {
-       let msg = (err as AxiosError).response?.data.message;
+    } catch (error) {
+        let msg = (error as AxiosError).response?.data.message;
        setError(msg);
     }
   };
@@ -218,9 +220,7 @@ const handleImageChange= (e:any)=>{
                     name="name"
                     control={control}
                     label="Tên sản phẩm"
-                    onChange={(e) =>
-                      setDataProduct({ ...dataProduct, name: e.target.value })
-                    }
+                    onChange={(e) => setDataProduct({ ...dataProduct, name: e.target.value.trim() })}
                   />
                 </FormControl>
               </Grid>
@@ -231,7 +231,7 @@ const handleImageChange= (e:any)=>{
                     control={control}
                     label="Giá"
                     type="number"
-                    min="10000"
+                    min="100000"
                     onChange={onChangePrice}
                   />
                 </FormControl>
@@ -243,7 +243,7 @@ const handleImageChange= (e:any)=>{
                     control={control}
                     label="Số lượng"
                     type="number"
-                    min="0"
+                    min="1"
                     onChange={onChangeQuantity}
                   />
                 </FormControl>
@@ -252,7 +252,14 @@ const handleImageChange= (e:any)=>{
             <Grid container>
               <Grid item xs={12} md={6} lg={4}>
                 <FormControl variant="outlined" size="small">
-                  <InputField name="discount_percentage" control={control} label="Giảm giá %" />
+                  <InputField
+                    name="discount_percentage"
+                    control={control}
+                    label="Giảm giá %"
+                    onChange={(e) =>
+                      setDataProduct({ ...dataProduct, discount_percentage: e.target.value })
+                    }
+                  />
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={6} lg={7}>
@@ -274,9 +281,10 @@ const handleImageChange= (e:any)=>{
                   <FormControl variant="outlined" size="small" fullWidth>
                     <InputLabel id="Category"> Danh mục</InputLabel>
                     <Select
+                      required
                       labelId="Category"
                       label="Danh mục"
-                      value={initialValues?.categoryId}
+                      value={valueSelect || dataProduct.categoryId}
                       onChange={handleSelectChange}
                       defaultValue={initialValues?.categoryId}
                       displayEmpty
@@ -364,9 +372,10 @@ const handleImageChange= (e:any)=>{
               {colors.map((item: any, index) => (
                 <FormControlLabel
                   key={index}
+                  
                   control={
-                    <Checkbox
-                      name={item.name}
+                    <Checkbox                  
+                      name="colors"
                       onChange={() => handleOnchangeColor(item)}
                       checked={
                         dataProduct.colorInfo.findIndex((i) => i.name === item.name) === -1
@@ -389,7 +398,7 @@ const handleImageChange= (e:any)=>{
                   key={index}
                   control={
                     <Checkbox
-                      name={item.name}
+                      name="sizes"
                       onChange={() => handleOnchangeSize(item)}
                       checked={
                         dataProduct.sizeInfo.findIndex((i) => i.name === item.name) === -1

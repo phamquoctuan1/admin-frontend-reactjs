@@ -1,13 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Avatar, Box, Button, Container, makeStyles, Typography } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { useAppDispatch } from 'app/hooks';
+import { Alert } from '@material-ui/lab';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { InputField } from 'components/FormFields';
 import { User } from 'models';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import { authActions, LoginPayload } from '../authSlice';
+import { authActions, LoginPayload, selectErrorLogin } from '../authSlice';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -43,6 +44,7 @@ export default function LoginPage() {
     userName:'',
     password:'',
   };
+  const userLoginError = useAppSelector(selectErrorLogin);
   const {
     control,
     handleSubmit,
@@ -55,6 +57,7 @@ export default function LoginPage() {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const handleFormSubmit = (formValues: LoginPayload) => {
+    dispatch(authActions.clearError());
     dispatch(authActions.login(formValues));
   };
   return (
@@ -69,6 +72,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(handleFormSubmit)} className={classes.form} noValidate>
           <InputField name="userName" control={control} label="Tên đăng nhập" />
           <InputField name="password" control={control} label="Mật khẩu" type="password" />
+          {userLoginError && <Alert severity="error">{userLoginError}</Alert>}
           <Button
             type="submit"
             fullWidth

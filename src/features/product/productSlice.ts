@@ -14,7 +14,7 @@ const initialState: ProductState = {
   list: [],
   filter: {
     _page: 1,
-    _limit: 2,
+    _limit: 6,
   },
   pagination: {
     _limit: 1,

@@ -26,13 +26,13 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
 }));
-export interface StudentTableProps {
+export interface CategoryTableProps {
   categoryList: Category[];
   onEdit?: (category: Category) => void;
   onRemove?: (category: Category) => void;
 }
 
-export default function CategoryTable({ categoryList, onEdit, onRemove }: StudentTableProps) {
+export default function CategoryTable({ categoryList, onEdit, onRemove }: CategoryTableProps) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>();
@@ -73,7 +73,7 @@ export default function CategoryTable({ categoryList, onEdit, onRemove }: Studen
                 <TableCell>{category.slug}</TableCell>
                 <TableCell>{category.status ? 'Kích hoạt' : 'Ẩn'}</TableCell>
                 <TableCell>{category.createdBy}</TableCell>
-                <TableCell>{dayjs(category.createdBy?.toString()).format('DD/MM/YYYY')}</TableCell>
+                <TableCell>{dayjs(category.createdAt).format('DD/MM/YYYY')}</TableCell>
                 <TableCell>{category.parentId}</TableCell>
                 <TableCell align="right">
                   <Button
@@ -93,7 +93,7 @@ export default function CategoryTable({ categoryList, onEdit, onRemove }: Studen
                       handleRemoveClick(category);
                     }}
                   >
-                    Xóa
+                   Ẩn
                   </Button>
                 </TableCell>
               </TableRow>
@@ -108,11 +108,10 @@ export default function CategoryTable({ categoryList, onEdit, onRemove }: Studen
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Remove a product?</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Ẩn danh mục?</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Bạn có thực sự muốn xóa sản phẩm "{selectedCategory?.name}" ? <br />
-            Việc này không thể quay lại!
+            Bạn muốn ẩn danh mục này ? <br />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -125,7 +124,7 @@ export default function CategoryTable({ categoryList, onEdit, onRemove }: Studen
             variant="contained"
             autoFocus
           >
-            Xóa
+            Ẩn
           </Button>
         </DialogActions>
       </Dialog>

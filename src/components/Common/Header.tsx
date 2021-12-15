@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 export function Header() {
   const classes = useStyles();
   const dispatch = useAppDispatch();
- 
+  
   const handleLogoutClick = () => {
     dispatch(authActions.logout());
   };

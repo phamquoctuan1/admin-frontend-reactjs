@@ -15,7 +15,6 @@ function App() {
           <AdminLayout />
         </PrivateRoute>
         <Route>
-       
           <NotFound />
         </Route>
       </Switch>

@@ -3,7 +3,7 @@ import { connectRouter, routerMiddleware } from 'connected-react-router';
 import authReducer from 'features/auth/authSlice';
 import categoryReducer from 'features/category/categorySlice';
 
-import dashboardReducer from 'features/dashboard/dashboardSlice';
+import orderReducer from 'features/order/orderSlice';
 import productReducer from 'features/product/productSlice';
 
 import createSagaMiddleware from 'redux-saga';
@@ -13,9 +13,9 @@ import rootSaga from './rootSaga';
 const rootReducer = combineReducers({
   router: connectRouter(history),
   auth: authReducer,
-  dashboard: dashboardReducer,
   product: productReducer,
   category: categoryReducer,
+  order: orderReducer
 });
 const sagaMiddleware = createSagaMiddleware();
 

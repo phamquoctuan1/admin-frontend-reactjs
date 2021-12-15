@@ -1,4 +1,4 @@
-import { call, delay, fork, put, take, spawn } from '@redux-saga/core/effects';
+import { call, delay, fork, put, spawn, take } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import authApi from 'api/authApi';
 import { AxiosError } from 'axios';
@@ -11,27 +11,30 @@ function* handleLogin(payload: LoginPayload) {
     const resToken: UserRespone = yield call(authApi.login, payload);
     if(resToken)
       localStorage.setItem('access_token', JSON.stringify(resToken.accessToken));
+       localStorage.setItem('refresh_token', JSON.stringify(resToken.refreshToken));
       const resUser: User = yield call(authApi.getUser, resToken.accessToken);
       yield put(authActions.getUserSuccess(resUser));
       yield put(authActions.loginSuccess(resUser));
-      yield put(push('/admin'));
-  } catch (error) {
-    let msg = (error as AxiosError).response?.data.message;
+      yield put(push('/admin/dashboard'));
+  } catch (error) { 
+     let msg = (error as AxiosError).response?.data.message;
+    console.log(msg);
     yield put(authActions.loginFailed(msg));
   }
 }
 
 function* getUser(payload: string) {
-  const resUser: User = yield call(authApi.getUser, payload);
-  if (resUser) yield put(authActions.getUserSuccess(resUser));
-  else {
-    yield fork(handleLogout);
+  try {
+     const resUser: User = yield call(authApi.getUser, payload);
+     yield put(authActions.getUserSuccess(resUser));
+  } catch (error) {
+       yield fork(handleLogout);
   }
 }
 
 function* handleLogout() {
-  yield delay(1000);
   localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
   yield put(push('/login'));
 }
 

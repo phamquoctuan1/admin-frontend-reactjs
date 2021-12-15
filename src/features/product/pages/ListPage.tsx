@@ -16,7 +16,9 @@ import {
   selectProductLoading,
   selectProductPagination,
 } from '../productSlice';
-
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import { AxiosError } from 'axios';
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'relative',
@@ -38,14 +40,14 @@ const useStyles = makeStyles((theme) => ({
 export default function ListPage() {
   const match = useRouteMatch();
   const history = useHistory();
-
+ const MySwal = withReactContent(Swal);
   const classes = useStyles();
   const dispatch = useAppDispatch();
-  const pagination = useAppSelector(selectProductPagination);
+
   const filter = useAppSelector(selectProductFilter);
   const productList = useAppSelector(selectProductList);
   const loading = useAppSelector(selectProductLoading);
-
+  const pagination = useAppSelector(selectProductPagination);
   useEffect(() => {
     dispatch(productActions.fetchProductList(filter));
   }, [dispatch, filter]);
@@ -66,9 +68,8 @@ export default function ListPage() {
   };
   const handleRemoveProduct = async (product: Product) => {
     try {
-      await productApi.remove(product?.id || 0);
-
-      toast.success('Remove Product successfully!', {
+      const response = await productApi.remove(product?.id || 0);
+      toast.success(response.message, {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -77,10 +78,10 @@ export default function ListPage() {
         draggable: true,
         progress: undefined,
       });
-      //Trigger to re-fetch student list with current filter
       dispatch(productActions.setFilter({ ...filter }));
     } catch (error) {
-      console.log('failed to fetch product data', error);
+      let msg = (error as AxiosError).response?.data.message;
+      MySwal.fire(msg, 'Thử lại sau', 'error');
     }
   };
   const handleEditProduct = async (product: Product) => {

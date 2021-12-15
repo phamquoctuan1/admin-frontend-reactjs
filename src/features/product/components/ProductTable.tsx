@@ -117,7 +117,7 @@ export default function ProductTable({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Remove a product?</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Xóa sản phẩm?</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Bạn có thực sự muốn xóa sản phẩm "{selectedProduct?.name}" ? <br />

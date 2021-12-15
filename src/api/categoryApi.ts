@@ -6,7 +6,7 @@ const categoryApi = {
     const url = '/category';
     return axiosClient.get(url);
   },
-  getParent(): Promise<ListResponse<Category>> {
+  getWithoutParent(): Promise<ListResponse<Category>> {
     const url = '/category/parent';
     return axiosClient.get(url);
   },

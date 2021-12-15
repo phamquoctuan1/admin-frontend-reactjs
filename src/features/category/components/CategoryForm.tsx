@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Box,
-  Button, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select
+  Button, CircularProgress, FormControl, Grid, MenuItem, Select, Typography
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import categoryApi from 'api/categoryApi';
@@ -10,7 +10,7 @@ import { AxiosError } from 'axios';
 import { InputField } from 'components/FormFields';
 import { selectUser } from 'features/auth/authSlice';
 import { Category, Product } from 'models';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 export interface CategoryFormProps {
@@ -20,7 +20,6 @@ export interface CategoryFormProps {
 const schema = yup
   .object({
     name: yup.string().required('Nhập tên danh mục'),
-   
   })
   .required();
 
@@ -29,6 +28,7 @@ export default function CategoryForm({ initialValues, onSubmit }: CategoryFormPr
   const user = useAppSelector(selectUser);
   const [categoryData, setCategoryData] = useState<Category>(initialValues);
   const [category, setCategory] = useState<Category[]>();
+  const [valueSelect, setValueSelect] = useState();
   const {
     control,
     handleSubmit,
@@ -37,10 +37,11 @@ export default function CategoryForm({ initialValues, onSubmit }: CategoryFormPr
     defaultValues:initialValues,
     resolver: yupResolver(schema),
   });
+
   useEffect(() => {
     const getCategory = async () => {
       try {
-        const response = await categoryApi.getParent();
+        const response = await categoryApi.getAll();
         setCategory(response.data);
       } catch (error) {
         console.log(error);
@@ -50,6 +51,7 @@ export default function CategoryForm({ initialValues, onSubmit }: CategoryFormPr
   }, []);
       const handleSelectChange = (e: any) => {
         setCategoryData({ ...categoryData,parentId: e.target.value});
+        setValueSelect(e.target.value);
       };
   const handleFormSubmit = async (formValues: Category) => {
      formValues = { ...categoryData };  
@@ -57,15 +59,15 @@ export default function CategoryForm({ initialValues, onSubmit }: CategoryFormPr
     try {
       setError('');
       await onSubmit?.(formValues);
-    } catch (err) {
-       let msg = (err as AxiosError).response?.data.message;
+    } catch (error) {
+         let msg = (error as AxiosError).response?.data.message;
        setError(msg);
     }
   };
   return (
     <Box maxWidth={1}>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <Grid container>
+        <Grid container direction="column" spacing={3}>
           <Grid item xs={12} md={6} lg={4}>
             <FormControl variant="outlined" size="small">
               <InputField
@@ -73,32 +75,35 @@ export default function CategoryForm({ initialValues, onSubmit }: CategoryFormPr
                 control={control}
                 label="Tên danh mục"
                 onChange={(e) =>
-                  setCategoryData({ ...categoryData, name: e.target.value, createdBy: user.name })
+                  setCategoryData({ ...categoryData, name: e.target.value, createdBy: user?.name })
                 }
               />
             </FormControl>
           </Grid>
+
           <Grid item xs={12} md={6} lg={4}>
-            <Box style={{ height: '40px', width: '210.4px', marginTop: '16px' }}>
-              <FormControl variant="outlined" size="small" fullWidth>
-                <InputLabel id="Category"> Danh mục</InputLabel>
-                <Select
-                  labelId="Category"
-                  label="Danh mục"
-                  value={initialValues?.parentId}
-                  onChange={handleSelectChange}
-                  defaultValue={initialValues?.parentId}
-                  displayEmpty
-                >
-                  <MenuItem value={initialValues?.parentId}></MenuItem>
-                  {category?.map((item, index) => (
-                    <MenuItem key={index} value={item.id}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
+            <Grid container direction="column">
+              <Grid item xs={12} md={6} lg={4}>
+                <Typography id="Category">Danh mục cha </Typography>
+              </Grid>
+              <Box style={{ height: '40px' }}>
+                <FormControl variant="outlined" size="small" fullWidth>
+                  <Select
+                    labelId="Category"
+                    label="Danh mục cha"
+                    value={valueSelect || categoryData.parentId}
+                    onChange={handleSelectChange}
+                  >
+                    <MenuItem value={initialValues?.id}></MenuItem>
+                    {category?.map((item, index) => (
+                      <MenuItem key={index} value={item.id}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            </Grid>
           </Grid>
         </Grid>
         {error && <Alert severity="error">{error}</Alert>}

@@ -39,7 +39,7 @@ export default function ProductFilters({
    useEffect(() => {
      const getCategory = async () => {
        try {
-         const response = await categoryApi.getAll();
+         const response = await categoryApi.getWithoutParent();
          setCategory(response.data);
        } catch (error) {
          console.log(error);
@@ -112,6 +112,9 @@ export default function ProductFilters({
               defaultValue
               displayEmpty
             >
+              <MenuItem >
+                 <em>Tất cả</em>
+              </MenuItem>
               {category?.map((item, index) => (
                 <MenuItem key={index} value={item.id}>
                   {item.name}
