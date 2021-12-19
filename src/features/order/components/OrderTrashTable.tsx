@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -13,7 +13,7 @@ import { AxiosError } from 'axios';
 import dayjs from 'dayjs';
 import { Order, Shipment } from 'models';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { numberWithCommas } from 'utils';
@@ -29,29 +29,24 @@ const useRowStyles = makeStyles({
 
 export interface RowProps {
   row: Shipment;
-  params?: any;
-  onComfirmStatus: (item: Order) => void;
-  onRemoveOrder: (item: Order) => void;
+  onRestoreOrder: (item: Order) => void;
 }
-function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
+function Row({ row, onRestoreOrder }: RowProps) {
   // const [open, setOpen] = useState(false);
   const classes = useRowStyles();
-  const handleComfirmClick = async (item: Order) => {
-    await onComfirmStatus(item);
-  };
   const [open, setOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Order>();
+  const [selectedOrder, setSelectedOrder] = useState<Order>();
 
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleRemoveClick = (order: Order): void => {
-    setSelectedCategory(order);
+    setSelectedOrder(order);
     setOpen(true);
   };
   const handleRemoveComfirm = async (order: Order) => {
-    await onRemoveOrder(order);
+    await onRestoreOrder(order);
     setOpen(false);
   };
 
@@ -70,33 +65,18 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
         <TableCell align="center">{row.phone}</TableCell>
         <TableCell align="center">{dayjs(row.ship_date).format('MM-DD-YYYY')}</TableCell>
         <TableCell align="center">{row.name_customer && row.name_customer}</TableCell>
-        <TableCell align="center">
-          {row.orderInfo?.status ? 'Đang giao' : 'Chờ xác nhận'}
-        </TableCell>
+        <TableCell align="center">{row.orderInfo?.deletedAt ? 'Đã hủy' : ''}</TableCell>
         <TableCell align="center">
           {row.orderInfo?.status || (
-            <>
-              <Button
-                size="small"
-                color="primary"
-                onClick={() => {
-                  handleComfirmClick(row.orderInfo);
-                }}
-              >
-                Tiến hành giao hàng
-              </Button>
-
-              <hr />
-              <Button
-                size="small"
-                color="secondary"
-                onClick={() => {
-                  handleRemoveClick(row.orderInfo);
-                }}
-              >
-                Hủy đơn hàng
-              </Button>
-            </>
+            <Button
+              size="small"
+              color="primary"
+              onClick={() => {
+                handleRemoveClick(row.orderInfo);
+              }}
+            >
+              Khôi phục
+            </Button>
           )}
         </TableCell>
         <TableCell align="center">
@@ -116,7 +96,7 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Bạn muốn hủy đơn hàng này ?</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Bạn muốn khôi phục đơn hàng này ?</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Và gửi mail thông báo cho Khách hàng <br />
@@ -127,7 +107,7 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
             Hủy
           </Button>
           <Button
-            onClick={() => handleRemoveComfirm(selectedCategory as Order)}
+            onClick={() => handleRemoveComfirm(selectedOrder as Order)}
             color="primary"
             variant="contained"
             autoFocus
@@ -140,63 +120,66 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
   );
 }
 
-export interface OrderTableProps {
-  orderList: Shipment[];
 
-}
-
-export default function OrderTable({ orderList }: OrderTableProps) {
+export default function OrderTrashTable() {
+  const history = useHistory();
+  const [orderList,setOrderList] = useState<Shipment[]>()
   const MySwal = withReactContent(Swal);
   const filter = useAppSelector(selectOrderFilter);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(orderActions.fetchOrderList(filter));
-  }, [dispatch, filter]);
-  const handleConfirmClick = async (item: Order) => {
+      const getTrashOrder = async () => {
+          const response = await orderApi.getAllTrash();
+          setOrderList(response?.data);
+      }
+      getTrashOrder();
+  }, []);
+  const handleRestoreOrder = async (item: Order) => {
     try {
-      await orderApi.update(item.id as number);
-      MySwal.fire('Thành công', 'Xác nhận đơn đặt hàng', 'success');
+      await orderApi.restore(item.id as number);
+      MySwal.fire('Thành công', 'Khôi phục đơn đặt hàng', 'success').then(() => {
+        history.push('/admin/order')
+      });
       dispatch(orderActions.fetchOrderList(filter));
     } catch (error) {
       let msg = (error as AxiosError).response?.data.message;
       MySwal.fire(msg, 'Xin kiểm tra lại ', 'error');
     }
   };
-  const handleRemoveOrder = async (item: Order)=>{
-    try { 
-     await orderApi.delete(item.id as number);
-      MySwal.fire('Thành công', 'Đơn hàng đã bị hủy kiểm tra thùng rác', 'success');
-      dispatch(orderActions.fetchOrderList(filter));
-    } catch (error) {
-      let msg = (error as AxiosError).response?.data.message;
-      MySwal.fire(msg, 'Xin kiểm tra lại ', 'error');
-    
-    }
-  }
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell align="center">Mã đơn đặt hàng</TableCell>
-            <TableCell align="center">Tổng tiền</TableCell>
-            <TableCell align="center">Địa chỉ giao hàng</TableCell>
-            <TableCell align="center">Số điện thoại</TableCell>
-            <TableCell align="center">Ngày đặt hàng</TableCell>
-            <TableCell align="center">Tên khách hàng</TableCell>
-            <TableCell align="center">Trạng thái</TableCell>
-            <TableCell align="center">Hành động</TableCell>
-            <TableCell align="center">Chi tiết</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {orderList.map((row, index) => (
-            <Row key={index} row={row} onComfirmStatus={handleConfirmClick} onRemoveOrder={handleRemoveOrder} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <Box mb={4}>
+        <Typography variant="h4">Đơn hàng bị hủy</Typography>
+      </Box>
+      <Link to="/admin/order">
+        <Button variant="contained" color="primary">
+          Quay lại
+        </Button>
+      </Link>
+      <TableContainer component={Paper}>
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell align="center">Mã đơn đặt hàng</TableCell>
+              <TableCell align="center">Tổng tiền</TableCell>
+              <TableCell align="center">Địa chỉ giao hàng</TableCell>
+              <TableCell align="center">Số điện thoại</TableCell>
+              <TableCell align="center">Ngày đặt hàng</TableCell>
+              <TableCell align="center">Tên khách hàng</TableCell>
+              <TableCell align="center">Trạng thái</TableCell>
+              <TableCell align="center">Hành động</TableCell>
+              <TableCell align="center">Chi tiết</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {orderList?.map((row, index) => (
+              <Row key={index} row={row} onRestoreOrder={handleRestoreOrder} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }
  

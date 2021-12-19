@@ -10,8 +10,8 @@ import {
   selectOrderLoading,
   selectOrderPagination
 } from '../orderSlice';
-
-
+import DeleteIcon from '@material-ui/icons/Delete';
+import { Link } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'relative',
@@ -57,7 +57,12 @@ export default function ListPage() {
       <Box className={classes.titleContainer}>
         <Typography variant="h4"> Quản lý đơn hàng</Typography>
       </Box>
-      <OrderTable orderList={orderList}  />
+      <Box>
+        <Link to="order/trash">
+          <DeleteIcon color="primary" style={{ fontSize: 40 }} />
+        </Link>
+      </Box>
+      <OrderTable orderList={orderList} />
       <Box mt={2} className={classes.pagination}>
         <Pagination
           color="primary"

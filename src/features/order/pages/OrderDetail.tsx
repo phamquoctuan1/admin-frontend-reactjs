@@ -113,6 +113,12 @@ const { orderId } = useParams<{ orderId: string }>();
                 {order?.shipmentInfo.phone}
               </Typography>
             </Box>
+            <Box mt={4}>
+              <Typography color="textSecondary">Email</Typography>
+              <Typography variant="body2" component="h3" className={classes.text}>
+                {order?.shipmentInfo?.email}
+              </Typography>
+            </Box>
           </CardContent>
         </Card>
       </Grid>

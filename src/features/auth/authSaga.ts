@@ -28,7 +28,8 @@ function* getUser(payload: string) {
      const resUser: User = yield call(authApi.getUser, payload);
      yield put(authActions.getUserSuccess(resUser));
   } catch (error) {
-       yield fork(handleLogout);
+      // yield take(authActions.logout.type);
+        yield fork(handleLogout);
   }
 }
 

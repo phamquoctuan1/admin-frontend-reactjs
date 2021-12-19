@@ -22,7 +22,9 @@ export interface Shipment {
   address: string;
   phone: string;
   name_customer: string;
-  orderInfo:Order;
+  email: string;
+  deletedAt?: Date;
+  orderInfo: Order;
 }
 
 export interface Order {
@@ -38,4 +40,5 @@ export interface Order {
   userInfo: User;
   OrderDetails:OrderDetails[];
   shipmentInfo:Shipment;
+  deletedAt?: Date;
 }
