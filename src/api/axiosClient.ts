@@ -1,11 +1,15 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getLocalAccessToken, getLocalRefreshToken } from "./authService";
 import decode from 'jwt-decode';
-const axiosClient = axios.create({
-  baseURL:
-    process.env.ENVIRONMENT === 'PRODUCTION'
+
+
+let baseUrl = process.env.ENVIRONMENT === 'PRODUCTION'
       ? process.env.REACT_APP_BASE_URL_API_PRODUCTION
-      : process.env.REACT_APP_BASE_URL_API,
+      : process.env.REACT_APP_BASE_URL_API 
+         
+ console.log(baseUrl);    
+const axiosClient = axios.create({
+  baseURL: baseUrl,
   headers: {
     'Content-Type': 'application/json',
   },
