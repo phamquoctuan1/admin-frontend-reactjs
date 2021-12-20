@@ -8,7 +8,7 @@ let baseUrl =
     ? process.env.REACT_APP_BASE_URL_API_PRODUCTION
     : process.env.REACT_APP_BASE_URL_API; 
          
- console.log(baseUrl);    
+
 const axiosClient = axios.create({
   baseURL: baseUrl,
   headers: {
