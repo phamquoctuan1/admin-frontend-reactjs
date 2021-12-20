@@ -2,7 +2,9 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getLocalAccessToken, getLocalRefreshToken } from "./authService";
 import decode from 'jwt-decode';
 const axiosClient = axios.create({
-  baseURL: 'https://nodejs-shopht.herokuapp.com/api',
+  baseURL:  process.env.ENVIRONMENT === 'PRODUCTION'
+      ? process.env.BASE_URL_API_PRODUCTION
+      : process.env.BASE_URL_API,
   headers: {
     'Content-Type': 'application/json',
   },
