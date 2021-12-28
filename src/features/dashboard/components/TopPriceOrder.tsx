@@ -37,8 +37,9 @@ export default function TopPriceOrder() {
        },
      },
    };
+   const dataConvert = ['MoMo','VNPay','Thanh Toán khi nhận hàng']
   const data = {
-    labels: dataTop?.map((item) => item.orderType),
+    labels: dataConvert?.map((item) => item),
     datasets: [
       {
         data: dataTop?.map((item) => item.amount),

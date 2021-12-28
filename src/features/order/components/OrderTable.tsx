@@ -11,7 +11,7 @@ import orderApi from 'api/orderApi';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { AxiosError } from 'axios';
 import dayjs from 'dayjs';
-import { Order, Shipment } from 'models';
+import { Order } from 'models';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -28,7 +28,7 @@ const useRowStyles = makeStyles({
 
 
 export interface RowProps {
-  row: Shipment;
+  row: Order;
   params?: any;
   onComfirmStatus: (item: Order) => void;
   onRemoveOrder: (item: Order) => void;
@@ -40,14 +40,14 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
     await onComfirmStatus(item);
   };
   const [open, setOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Order>();
+  const [selectedOrder, setSelectedOrder] = useState<Order>();
 
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleRemoveClick = (order: Order): void => {
-    setSelectedCategory(order);
+    setSelectedOrder(order);
     setOpen(true);
   };
   const handleRemoveComfirm = async (order: Order) => {
@@ -64,23 +64,24 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
           </IconButton>
         </TableCell> */}
         <TableCell align="center">{row.id}</TableCell>
-        <TableCell align="center">{row.orderInfo?.name}</TableCell>
-        <TableCell align="center">{numberWithCommas(row.orderInfo?.amount)}</TableCell>
-        <TableCell align="center">{row.address}</TableCell>
-        <TableCell align="center">{row.phone}</TableCell>
-        <TableCell align="center">{dayjs(row.ship_date).format('MM-DD-YYYY')}</TableCell>
-        <TableCell align="center">{row.name_customer && row.name_customer}</TableCell>
+        <TableCell align="center">{row.name}</TableCell>
         <TableCell align="center">
-          {row.orderInfo?.status ? 'Đang giao' : 'Chờ xác nhận'}
+          {row.orderType === 'Normal' ? 'Thanh toán khi nhận hàng' : row.orderType}
         </TableCell>
+        <TableCell align="center">{numberWithCommas(row.amount)}</TableCell>
+        <TableCell align="center">{dayjs(row.createdAt).format('MM-DD-YYYY')}</TableCell>
         <TableCell align="center">
-          {row.orderInfo?.status || (
+          {row.shipmentInfo?.name_customer && row.shipmentInfo?.name_customer}
+        </TableCell>
+        <TableCell align="center">{row.status}</TableCell>
+        <TableCell align="center">
+          {row.status === 'Chờ xác nhận' && (
             <>
               <Button
                 size="small"
                 color="primary"
                 onClick={() => {
-                  handleComfirmClick(row.orderInfo);
+                  handleComfirmClick(row);
                 }}
               >
                 Tiến hành giao hàng
@@ -91,7 +92,7 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
                 size="small"
                 color="secondary"
                 onClick={() => {
-                  handleRemoveClick(row.orderInfo);
+                  handleRemoveClick(row);
                 }}
               >
                 Hủy đơn hàng
@@ -100,7 +101,7 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
           )}
         </TableCell>
         <TableCell align="center">
-          <Link to={`order/${row.orderInfo?.id}`} style={{ textDecoration: 'none' }}>
+          <Link to={`order/${row?.id}`} style={{ textDecoration: 'none' }}>
             <Button size="small" color="primary">
               Xem chi tiết
             </Button>
@@ -127,7 +128,7 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
             Hủy
           </Button>
           <Button
-            onClick={() => handleRemoveComfirm(selectedCategory as Order)}
+            onClick={() => handleRemoveComfirm(selectedOrder as Order)}
             color="primary"
             variant="contained"
             autoFocus
@@ -141,7 +142,7 @@ function Row({ row, onComfirmStatus, onRemoveOrder }: RowProps) {
 }
 
 export interface OrderTableProps {
-  orderList: Shipment[];
+  orderList: Order[];
 
 }
 
@@ -181,8 +182,7 @@ export default function OrderTable({ orderList }: OrderTableProps) {
             <TableCell>ID</TableCell>
             <TableCell align="center">Mã đơn đặt hàng</TableCell>
             <TableCell align="center">Tổng tiền</TableCell>
-            <TableCell align="center">Địa chỉ giao hàng</TableCell>
-            <TableCell align="center">Số điện thoại</TableCell>
+            <TableCell align="center">Phương thức thanh toán</TableCell>
             <TableCell align="center">Ngày đặt hàng</TableCell>
             <TableCell align="center">Tên khách hàng</TableCell>
             <TableCell align="center">Trạng thái</TableCell>

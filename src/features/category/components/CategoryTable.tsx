@@ -19,7 +19,6 @@ import { Category } from 'models';
 import React, { useState } from 'react';
 
 
-
 const useStyles = makeStyles((theme) => ({
   table: {},
   edit: {
@@ -93,7 +92,7 @@ export default function CategoryTable({ categoryList, onEdit, onRemove }: Catego
                       handleRemoveClick(category);
                     }}
                   >
-                   Ẩn
+                    Ẩn
                   </Button>
                 </TableCell>
               </TableRow>

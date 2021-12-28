@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { ListParams, ListResponse, PaginationParams, Shipment } from 'models';
+import { ListParams, ListResponse, PaginationParams ,Order} from 'models';
 
 export interface OrderState {
   loading: boolean;
-  list: Shipment[];
+  list: Order[];
   filter: ListParams;
   pagination: PaginationParams;
 }
@@ -29,7 +29,7 @@ const orderSlice = createSlice({
     fetchOrderList(state, action: PayloadAction<ListParams>) {
       state.loading = true;
     },
-    fetchOrderListSuccess(state, action: PayloadAction<ListResponse<Shipment>>) {
+    fetchOrderListSuccess(state, action: PayloadAction<ListResponse<Order>>) {
       state.list = action.payload.data;
       state.pagination = action.payload.pagination;
       state.loading = false;

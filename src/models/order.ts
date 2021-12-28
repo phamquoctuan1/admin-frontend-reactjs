@@ -32,7 +32,7 @@ export interface Order {
   name: string;
   amount: number;
   orderType: string;
-  status: boolean;
+  status: string;
   comfirmedBy: string;
   createdAt?: Date;
   updatedAt?: Date;

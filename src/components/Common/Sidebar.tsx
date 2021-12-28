@@ -9,6 +9,7 @@ import { NavLink } from 'react-router-dom';
 import { useAppDispatch } from 'app/hooks';
 import { authActions } from 'features/auth/authSlice';
 import CategoryIcon from '@material-ui/icons/Category';
+import LocalShippingIcon from '@material-ui/icons/LocalShipping';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -85,7 +86,16 @@ export function Sidebar() {
             <ListItemIcon>
               <Person />
             </ListItemIcon>
-            <ListItemText primary="Khách hàng"/>
+            <ListItemText primary="Khách hàng" />
+          </ListItem>
+        </NavLink>
+
+        <NavLink to="/admin/shipment" className={classes.link}>
+          <ListItem button>
+            <ListItemIcon>
+              <LocalShippingIcon />
+            </ListItemIcon>
+            <ListItemText primary="Giao hàng" />
           </ListItem>
         </NavLink>
       </List>

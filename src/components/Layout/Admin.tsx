@@ -8,6 +8,7 @@ import ProductFeature from 'features/product';
 import CategoryFeature from 'features/category';
 import OrderFeature from 'features/order';
 import CustomerFeature from 'features/customer';
+import ShipmentFeature from 'features/shipment';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,6 +59,9 @@ export function AdminLayout() {
           </Route>
           <Route path="/admin/customer">
             <CustomerFeature />
+          </Route>
+          <Route path="/admin/shipment">
+            <ShipmentFeature />
           </Route>
         </Switch>
       </Box>

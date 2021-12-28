@@ -38,7 +38,7 @@ export default function ListPage() {
   return (
     <Box className={classes.root}>
       <Box className={classes.titleContainer}>
-        <Typography variant="h4"> Quản lý đơn hàng</Typography>
+        <Typography variant="h4"> Quản lý khách hàng</Typography>
       </Box>
       <CustomerTable userList={userList} />
       {/* Pagination */}

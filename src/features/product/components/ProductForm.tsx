@@ -41,7 +41,8 @@ const schema = yup
       .integer('Giá sản phẩm không được âm')
       .required('Không được bỏ trống')
       .typeError('Giá trị không hợp lệ')
-      .min(10000, 'Tối thiểu 10 ngàn đồng'),
+      .min(100000, 'Tối thiểu 100 ngàn đồng')
+      .max(1000000,'Tối đa 1 triệu đồng'),
     quantity: yup
       .number()
       .positive('Giá sản phẩm không được âm.')
@@ -50,7 +51,7 @@ const schema = yup
       .typeError('Giá trị không hợp lệ'),
     discount_percentage: yup
       .string()
-      .matches(/^0*(100\.00|0|100|[0-9]?[0-9])%+?$/, 'Nhập khuyến mãi theo %'),
+      .matches(/^0*(100\.00|0|100|[0-9]?[0-9])%+?$/, 'Nhập chính xác khuyến mãi theo %'),
   })
   .required();
   const initialDataProduct: Product = {
@@ -111,8 +112,8 @@ export default function ProductForm({ initialValues, onSubmit }: ProductFormProp
   if (initialValues?.imageInfo) a = initialValues?.imageInfo.map((item: any) => item['url']);
   const [imagePreview, setImagePreview] = useState<string[]>(a || []);
 const [category, setCategory] = useState<Category[]>();
-  const [open, setOpen] = useState(false);
   const [valueSelect, setValueSelect] = useState();
+  const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(true);
   };
@@ -230,8 +231,7 @@ const handleImageChange= (e:any)=>{
                     name="price"
                     control={control}
                     label="Giá"
-                    type="number"
-                    min="100000"
+                    type="number"                   
                     onChange={onChangePrice}
                   />
                 </FormControl>

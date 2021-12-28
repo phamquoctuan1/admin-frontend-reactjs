@@ -76,8 +76,7 @@ export default function ProductFilters({
       _page: 1,
       _sort: undefined,
       _order: undefined,
-      city: undefined,
-      name_like: undefined,
+      name: undefined,
     };
     onChange(newFilter);
     if (searchRef.current) {
@@ -94,7 +93,7 @@ export default function ProductFilters({
               id="searchByName"
               label="Tìm theo tên"
               endAdornment={<Search />}
-              defaultValue={filter.name_like}
+              defaultValue={filter.name}
               onChange={handleSearchChange}
               inputRef={searchRef}
             />

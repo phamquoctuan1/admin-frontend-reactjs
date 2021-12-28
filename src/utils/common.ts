@@ -21,3 +21,4 @@ export const calculatorPromoteAmount = (num: number, discount_amount: number) =>
   let discount_price = num - discount_amount;
   return discount_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' VNĐ';
 };
+

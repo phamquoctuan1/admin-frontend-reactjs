@@ -5,6 +5,7 @@ import categoryReducer from 'features/category/categorySlice';
 
 import orderReducer from 'features/order/orderSlice';
 import productReducer from 'features/product/productSlice';
+import shipmentReducer from 'features/shipment/shipmentSlice';
 
 import createSagaMiddleware from 'redux-saga';
 import { history } from 'utils';
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   auth: authReducer,
   product: productReducer,
   category: categoryReducer,
-  order: orderReducer
+  order: orderReducer,
+  shipment: shipmentReducer
 });
 const sagaMiddleware = createSagaMiddleware();
 
