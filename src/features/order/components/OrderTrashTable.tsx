@@ -11,7 +11,7 @@ import orderApi from 'api/orderApi';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { AxiosError } from 'axios';
 import dayjs from 'dayjs';
-import { Order, Shipment } from 'models';
+import { Order } from 'models';
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -28,7 +28,7 @@ const useRowStyles = makeStyles({
 
 
 export interface RowProps {
-  row: Shipment;
+  row: Order;
   onRestoreOrder: (item: Order) => void;
 }
 function Row({ row, onRestoreOrder }: RowProps) {
@@ -59,20 +59,23 @@ function Row({ row, onRestoreOrder }: RowProps) {
           </IconButton>
         </TableCell> */}
         <TableCell align="center">{row.id}</TableCell>
-        <TableCell align="center">{row.orderInfo?.name}</TableCell>
-        <TableCell align="center">{numberWithCommas(row.orderInfo?.amount)}</TableCell>
-        <TableCell align="center">{row.address}</TableCell>
-        <TableCell align="center">{row.phone}</TableCell>
-        <TableCell align="center">{dayjs(row.ship_date).format('MM-DD-YYYY')}</TableCell>
-        <TableCell align="center">{row.name_customer && row.name_customer}</TableCell>
-        <TableCell align="center">{row.orderInfo?.deletedAt ? 'Đã hủy' : ''}</TableCell>
+        <TableCell align="center">{row.name}</TableCell>
         <TableCell align="center">
-          {row.orderInfo?.status || (
+          {row.orderType === 'Normal' ? 'Thanh toán khi nhận hàng' : row.orderType}
+        </TableCell>
+        <TableCell align="center">{numberWithCommas(row.amount)}</TableCell>
+        <TableCell align="center">{dayjs(row.createdAt).format('MM-DD-YYYY')}</TableCell>
+        <TableCell align="center">
+          {row.shipmentInfo?.name_customer && row.shipmentInfo?.name_customer}
+        </TableCell>
+        <TableCell align="center">{row.status}</TableCell>
+        <TableCell align="center">
+          {row.status === 'Đã hủy' && (
             <Button
               size="small"
               color="primary"
               onClick={() => {
-                handleRemoveClick(row.orderInfo);
+                handleRemoveClick(row);
               }}
             >
               Khôi phục
@@ -80,7 +83,7 @@ function Row({ row, onRestoreOrder }: RowProps) {
           )}
         </TableCell>
         <TableCell align="center">
-          <Link to={`order/${row.orderInfo?.id}`} style={{ textDecoration: 'none' }}>
+          <Link to={`order/${row?.id}`} style={{ textDecoration: 'none' }}>
             <Button size="small" color="primary">
               Xem chi tiết
             </Button>
@@ -123,7 +126,7 @@ function Row({ row, onRestoreOrder }: RowProps) {
 
 export default function OrderTrashTable() {
   const history = useHistory();
-  const [orderList,setOrderList] = useState<Shipment[]>()
+  const [orderList,setOrderList] = useState<Order[]>()
   const MySwal = withReactContent(Swal);
   const filter = useAppSelector(selectOrderFilter);
   const dispatch = useAppDispatch();
@@ -162,9 +165,8 @@ export default function OrderTrashTable() {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell align="center">Mã đơn đặt hàng</TableCell>
+              <TableCell align="center">Phương thức thanh toán</TableCell>
               <TableCell align="center">Tổng tiền</TableCell>
-              <TableCell align="center">Địa chỉ giao hàng</TableCell>
-              <TableCell align="center">Số điện thoại</TableCell>
               <TableCell align="center">Ngày đặt hàng</TableCell>
               <TableCell align="center">Tên khách hàng</TableCell>
               <TableCell align="center">Trạng thái</TableCell>

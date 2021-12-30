@@ -181,8 +181,8 @@ export default function OrderTable({ orderList }: OrderTableProps) {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell align="center">Mã đơn đặt hàng</TableCell>
-            <TableCell align="center">Tổng tiền</TableCell>
             <TableCell align="center">Phương thức thanh toán</TableCell>
+            <TableCell align="center">Tổng tiền</TableCell>
             <TableCell align="center">Ngày đặt hàng</TableCell>
             <TableCell align="center">Tên khách hàng</TableCell>
             <TableCell align="center">Trạng thái</TableCell>
@@ -192,7 +192,12 @@ export default function OrderTable({ orderList }: OrderTableProps) {
         </TableHead>
         <TableBody>
           {orderList.map((row, index) => (
-            <Row key={index} row={row} onComfirmStatus={handleConfirmClick} onRemoveOrder={handleRemoveOrder} />
+            <Row
+              key={index}
+              row={row}
+              onComfirmStatus={handleConfirmClick}
+              onRemoveOrder={handleRemoveOrder}
+            />
           ))}
         </TableBody>
       </Table>

@@ -1,4 +1,4 @@
-import { ListParams, ListResponse, Order, Shipment } from 'models';
+import { ListParams, ListResponse, Order } from 'models';
 import axiosClient from './axiosClient';
 
 const orderApi = {
@@ -6,7 +6,7 @@ const orderApi = {
     const url = '/order';
     return axiosClient.get(url, { params });
   },
-  getAllTrash(): Promise<ListResponse<Shipment>> {
+  getAllTrash(): Promise<ListResponse<Order>> {
     const url = '/order/trash';
     return axiosClient.get(url);
   },
