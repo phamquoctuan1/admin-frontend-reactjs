@@ -30,16 +30,20 @@ export interface RowProps {
   row: Shipment;
   params?: any;
   onComfirmStatus: (item: Shipment) => void;
+  onCancelStatus: (item: Shipment) => void;
 }
-function Row({ row, onComfirmStatus }: RowProps) {
+function Row({ row, onComfirmStatus, onCancelStatus }: RowProps) {
   const classes = useRowStyles();
   const handleComfirmClick = async (item: Shipment) => {
     await onComfirmStatus(item);
-  }; 
+  };
+  const handleCancelClick = async (item: Shipment) => {
+    await onCancelStatus(item);
+  };
 
   return (
     <React.Fragment>
-      {row.orderInfo.status !== 'Chờ xác nhận'  && (
+      {row.orderInfo.status !== 'Chờ xác nhận' && (
         <TableRow className={classes.root}>
           <TableCell align="center">{row.id}</TableCell>
           <TableCell align="center">{row.orderInfo?.name}</TableCell>
@@ -48,11 +52,9 @@ function Row({ row, onComfirmStatus }: RowProps) {
           <TableCell align="center">{row.phone}</TableCell>
           <TableCell align="center">{dayjs(row.ship_date).format('MM-DD-YYYY')}</TableCell>
           <TableCell align="center">{row.name_customer && row.name_customer}</TableCell>
+          <TableCell align="center">{row.status}</TableCell>
           <TableCell align="center">
-            {row.status ? 'Đã giao thành công' : 'Đang giao hàng'}
-          </TableCell>
-          <TableCell align="center">
-            {row.status || (
+            {row.status === 'Đang giao hàng' && (
               <>
                 <Button
                   size="small"
@@ -62,6 +64,16 @@ function Row({ row, onComfirmStatus }: RowProps) {
                   }}
                 >
                   Xác nhận giao hàng thành công
+                </Button>
+                <hr />
+                <Button
+                  size="small"
+                  color="secondary"
+                  onClick={() => {
+                    handleCancelClick(row);
+                  }}
+                >
+                  Xác nhận giao hàng thất bại
                 </Button>
               </>
             )}
@@ -89,7 +101,17 @@ export default function ShipmentTable({ shipmentList }: ShipmentTableProps) {
   const handleConfirmClick = async (item: Shipment) => {
     try {
       await shipmentApi.update(item.id as number);
-      MySwal.fire('Thành công', 'đơn đặt hàng hoàn tất', 'success');
+      MySwal.fire('Thành công', 'Xác nhận đơn hàng đã hoàn tất', 'success');
+      dispatch(shipmentActions.fetchShipmentList(filter));
+    } catch (error) {
+      let msg = (error as AxiosError).response?.data.message;
+      MySwal.fire(msg, 'Xin kiểm tra lại ', 'error');
+    }
+  }; 
+  const handleCancelClick = async (item: Shipment) => {
+    try {
+      await shipmentApi.cancel(item.id as number);
+      MySwal.fire('Thành công', 'Xác nhận đơn hàng giao không thành công', 'success');
       dispatch(shipmentActions.fetchShipmentList(filter));
     } catch (error) {
       let msg = (error as AxiosError).response?.data.message;
@@ -114,11 +136,7 @@ export default function ShipmentTable({ shipmentList }: ShipmentTableProps) {
         </TableHead>
         <TableBody>
           {shipmentList.map((row, index) => (
-            <Row
-              key={index}
-              row={row}
-              onComfirmStatus={handleConfirmClick}       
-            />
+            <Row key={index} row={row} onComfirmStatus={handleConfirmClick} onCancelStatus={handleCancelClick} />
           ))}
         </TableBody>
       </Table>

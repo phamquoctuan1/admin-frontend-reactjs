@@ -16,7 +16,7 @@ export interface Shipment {
   id?: number;
   ship_method: 'ghtk';
   ship_cost: number;
-  status: boolean;
+  status: string;
   ship_date: string;
   estimated_time: string;
   address: string;

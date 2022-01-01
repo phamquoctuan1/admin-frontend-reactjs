@@ -14,6 +14,10 @@ const shipmentApi = {
     const url = `/shipment/update/${id}`;
     return axiosClient.get(url);
   },
+  cancel(id: number): Promise<Shipment> {
+    const url = `/shipment/cancel/${id}`;
+    return axiosClient.get(url);
+  },
 };
 
 export default shipmentApi;
