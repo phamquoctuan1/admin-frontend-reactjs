@@ -55,7 +55,7 @@ const schema = yup
   })
   .required();
   const initialDataProduct: Product = {
-    price:1000,
+    price:100000,
     discount_percentage:'0%',
     description: '',
     quantity:1,
